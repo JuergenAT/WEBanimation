@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Web animation</title>
+
+    <link rel="stylesheet" href="style.css" type="text/css"/>
+
+  </head>
+  <body>
+    <script src="FabricJS/fabric.js"></script>
+    <script src="spriteClass.js"></script>
+    <script src="spriteBeth.js"></script>
+
+
+   <!-- <style type="text/css">
+      .canvas-container {position:absolute;}
+      #vid1 {position:absolute;
+            left:20px; 
+            top:0px; 
+            z-index:0;
+            border:1px solid black ;
+            }
+      #canv {position:absolute;
+            left:0px; 
+            top:0px; 
+            z-index:1;
+            border:1px solid black ;
+            }
+    </style> 
+     -->
+  
+  <div id="contCanvas">
+      <canvas id="canv" width="1250" height="680" > </canvas>
+      <canvas id="vid1" width="1250" height="680" > </canvas>
+  </div> 
+
+
+    <img id="BG" src="/assets/Beethoven 1000 .jpg" style="display: none">
+    <img id="Ball" src="./assets/Ball.png" style="display: none">
+    <img id="Eye" src="./assets/Auge.png" style="display: none">
+    
+
+    
+
+  <video id="videoLisa" style="display: none" muted preload="auto" class="canvas-img" loop="true" width="2000" height="1000">
+      <source id="video_src1" src="./assets/LisaProbe01.mov" type="video/mp4">
+  </video>
+
+
+
+
+
+
+    <script src="./animation.js"></script> 
+  </body>
+</html>

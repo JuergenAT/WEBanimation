@@ -1,0 +1,26 @@
+
+    #contCanvas{
+        margin: 0 auto;
+        overflow: auto;
+    }
+    #contCanvas > .canvas-container:nth-child(1) {
+        z-index: 1;
+        position: absolute !important;
+        }
+
+    #contCanvas > .canvas-container:nth-child(2) {
+        z-index: 0;
+        position: absolute !important;
+        }
+
+
+    #vid1 {position:absolute;
+        left:20px; 
+        top:0px; 
+        border:1px solid black ;
+        }
+    #canv {position:absolute;
+        left:0px; 
+        top:0px; 
+        border:1px solid black ;
+        }

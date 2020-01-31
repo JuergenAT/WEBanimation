@@ -1,9 +1,10 @@
-var canvas = new fabric.Canvas('canv');
+let canvas = new fabric.Canvas('canv');
 fabric.Object.prototype.objectCaching = true;
-var vid1Layer = new fabric.Canvas('vid1');
-var BG_El = document.getElementById('BG');
-var BallEl = document.getElementById('Ball');
-var Eye_El = document.getElementById('Eye');
+let vid1Layer = new fabric.Canvas('vid1');
+let BG_El = document.getElementById('BG');
+let BallEl = document.getElementById('Ball');
+let Eye_El = document.getElementById('Eye');
+let fps = 18  // frames per sec. max 60
 
 window.bSpr = {
   left : 300,
@@ -14,7 +15,7 @@ window.bSpr = {
 
 
 // var Video1clipPath = new fabric.Circle({ radius: 70, top: 10, left: 980 });
-var Video1clipPath = new fabric.Rect({ 
+let Video1clipPath = new fabric.Rect({ 
   left: 955,   // 955
   top: 0,
   fill: 'black',
@@ -23,24 +24,24 @@ var Video1clipPath = new fabric.Rect({
   leftBoarder : 955 });
 
 
-var video1El = document.getElementById('videoLisa');
-var video1 = new fabric.Image(video1El, { left: 955,  top: 0  });
+let video1El = document.getElementById('videoLisa');
+let video1 = new fabric.Image(video1El, { left: 955,  top: 0  });
 video1.scale(0.3);
 vid1Layer.clipPath = Video1clipPath;
 vid1Layer.add(video1); 
 
 
 
-var BG = new fabric.Image(BG_El);
+let BG = new fabric.Image(BG_El);
 BG.scale(0.68);
 canvas.backgroundImage = BG;
 
-var Ball = new fabric.Image(BallEl);
+let Ball = new fabric.Image(BallEl);
 Ball.scale(0.45).set('top', 486,57).set('left', 941,49);
 Ball.objectCaching = false;
 canvas.add(Ball);
 
-var Eye = new fabric.Image(Eye_El);
+let Eye = new fabric.Image(Eye_El);
 Eye.scale(0.45).set('top', 556,36).set('left', 916,53).set('ceiling',500);
 Eye.originX = Eye.originY = 'center';
 Eye.movingLeft = 1;
@@ -50,7 +51,9 @@ canvas.add(Eye);
 
 
 // animate Eye object
-//
+// the height depends on MIDI message
+// when it flies high it stops plaing video and has influence 
+// at video trimming
 
 (function animateEye() {
   Eye.left += (Eye.movingLeft ? -10 : 10);
@@ -72,10 +75,6 @@ canvas.add(Eye);
   }
   Eye.dirty = false;  
 
-
-
-  canvas.renderAll();
-  vid1Layer.renderAll();
   fabric.util.requestAnimFrame(animateEye);
 })();
 
@@ -154,7 +153,7 @@ canvas.add(Eye);
   //
   // Variable which tell us what step of the game we're on. 
 // We'll use this later when we parse noteOn/Off messages
-var currentStep = 0;
+let currentStep = 0;
 
 // Request MIDI access
 if (navigator.requestMIDIAccess) {
@@ -171,12 +170,12 @@ if (navigator.requestMIDIAccess) {
 
 // Function to run when requestMIDIAccess is successful
 function onMIDISuccess(midiAccess) {
-  var inputs = midiAccess.inputs;
-  var outputs = midiAccess.outputs;
+  let inputs = midiAccess.inputs;
+  let outputs = midiAccess.outputs;
   console.log('000', midiAccess.inputs)
 
   // Attach MIDI event "listeners" to each input
-  for (var input of midiAccess.inputs.values()) {
+  for (let input of midiAccess.inputs.values()) {
       input.onmidimessage = getMIDIMessage;
       console.log('111', input.name)
   }
@@ -191,9 +190,9 @@ function onMIDIFailure() {
 // For this app, we're only concerned with the actual note value,
 // but we can parse for other information, as well
 function getMIDIMessage(message) {
-  var command = message.data[0];
-  var note = message.data[1];
-  var velocity = (message.data.length > 2) ? message.data[2] : 0; // a velocity value might not be included with a noteOff command
+  let command = message.data[0];
+  let note = message.data[1];
+  let velocity = (message.data.length > 2) ? message.data[2] : 0; // a velocity value might not be included with a noteOff command
 
   switch (command) {
       case 144: // note on
@@ -248,9 +247,9 @@ function noteOff(note) {
 //
   function getMouseCoords(event)
 {
-  var pointer = canvas.getPointer(event.e);
-  var posX = pointer.x;
-  var posY = pointer.y;
+  let pointer = canvas.getPointer(event.e);
+  let posX = pointer.x;
+  let posY = pointer.y;
   console.log(posX+", "+posY);    // Log to console
 }
 
@@ -327,8 +326,7 @@ function noteOff(note) {
           canvas.remove(BSpriteL);
           }
         };
-        canvas.renderAll();
-        fabric.util.requestAnimFrame(render);
+        setTimeout(()=>{fabric.util.requestAnimFrame(render)},1000/fps) ;
         
       })();
 
@@ -346,8 +344,8 @@ function noteOff(note) {
       window.bSpr.Rtrigger = 0;
       window.bSpr.left = 355;
       BSpriteR.play();
-      
-      (function render() { 
+
+      ( function render() { 
         window.bSpr.left += (window.bSpr.movingLeft ? -2 : 2);
         if (window.bSpr.left > 1300) {  window.bSpr.movingLeft = 1; }  
         if (window.bSpr.left < -5)   {  window.bSpr.movingLeft = 0; }  
@@ -364,10 +362,9 @@ function noteOff(note) {
             canvas.remove(BSpriteR);
           }
         };
-        canvas.renderAll();
-        fabric.util.requestAnimFrame(render);
+        setTimeout(()=>{fabric.util.requestAnimFrame(render)},1000/fps);
         
-      })();
+      } )();
 
     };
   }
@@ -376,3 +373,17 @@ function noteOff(note) {
 
   
 // })();
+
+
+
+// Global Render function for all canvas elements
+//  for 18 frames per sec.   55ms INterval
+async function globalRender(){
+  setTimeout(() => {
+    canvas.renderAll();
+    vid1Layer.renderAll();
+    fabric.util.requestAnimFrame(globalRender);
+  }, 1000/fps)
+}
+
+globalRender()

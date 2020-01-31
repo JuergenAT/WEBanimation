@@ -71,7 +71,7 @@ fabric.BSprite = fabric.util.createClass(fabric.Image, {
           _this.spriteIndex = 0;
         }
         _this.set('dirty', true);
-      }, 5);     // interval: ~ 1/frequence
+      }, 55);     // interval: ~ 1/frequence
     },
   
     stop: function() {

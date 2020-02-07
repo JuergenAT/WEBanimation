@@ -11,6 +11,7 @@ fabric.BSprite = fabric.util.createClass(fabric.Image, {
     spriteWidth: 252,
     spriteHeight: 581,
     spriteIndex: 0,
+    flip: 0,     //  1 - X-flipped, 0 - original
   
     initialize: function(element, options) {
       options || (options = { });
@@ -31,47 +32,68 @@ fabric.BSprite = fabric.util.createClass(fabric.Image, {
     },
   
     createSpriteImages: function() {
-      this.spriteImages = [ ];
+      this.spriteImages = [[],[]];
   
-      var steps = this._element.width / this.spriteWidth;
-      for (var i = 0; i < steps; i++) {
+      let steps = this._element.width / this.spriteWidth;
+      for (let i = 0; i < steps; i++) {
         this.createSpriteImage(i);
       }
     },
   
     createSpriteImage: function(i) {
-      var tmpCtx = this.tmpCanvasEl.getContext('2d');
+      let tmpCtx = this.tmpCanvasEl.getContext('2d');
       tmpCtx.clearRect(0, 0, this.tmpCanvasEl.width, this.tmpCanvasEl.height);
       tmpCtx.drawImage(this._element, -i * this.spriteWidth, 0);
   
-      var dataURL = this.tmpCanvasEl.toDataURL('image/png');
-      var tmpImg = fabric.util.createImage();
+      let dataURL = this.tmpCanvasEl.toDataURL('image/png');
+      let tmpImg = fabric.util.createImage();
+      
   
       tmpImg.src = dataURL;
   
-      this.spriteImages.push(tmpImg);
+      this.spriteImages[0][i] = tmpImg;
+
+      // for flipped sprite:
+      let tmpCtxF = this.tmpCanvasEl.getContext('2d');
+      tmpCtxF.clearRect(0, 0, this.tmpCanvasEl.width, this.tmpCanvasEl.height);
+
+      
+      tmpCtxF.save();
+
+      tmpCtxF.translate(this.spriteWidth, 0);  //location on the canvas to draw your sprite, this is important.
+  
+      tmpCtxF.scale(-1, 1);  //This does your mirroring/flipping
+      tmpCtxF.drawImage(this._element, i * this.spriteWidth, 0, this.spriteWidth, this.spriteHeight, 0, 0, this.spriteWidth, this.spriteHeight );  //destination x, y is set to 0, 0 (which will be at translated xy)
+      let dataURLFlip = this.tmpCanvasEl.toDataURL('image/png');
+      let tmpImgFlip = fabric.util.createImage();
+      tmpImgFlip.src = dataURLFlip;
+      tmpImgFlip.flipX=true;
+      this.spriteImages[1][i] = tmpImgFlip;
+
+
+      tmpCtxF.restore();
     },
   
     _render: function(ctx) {
       ctx.drawImage(
-        this.spriteImages[this.spriteIndex],
+        this.spriteImages[this.flip][this.spriteIndex],
         -this.width / 2,
         -this.height / 2
       );
     },
   
     play: function() {
-      var _this = this;
+      let _this = this;
       this.animInterval = setInterval(function() {
   
         _this.onPlay && _this.onPlay();
   
         _this.spriteIndex++;
-        if (_this.spriteIndex === _this.spriteImages.length) {
+        if (_this.spriteIndex === _this.spriteImages[0].length) {
           _this.spriteIndex = 0;
         }
         _this.set('dirty', true);
-      }, 55);     // interval: ~ 1/frequence
+      }, 1000/fps);     // interval: ~ 1/frequence
     },
   
     stop: function() {

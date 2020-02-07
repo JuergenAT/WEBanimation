@@ -4,7 +4,7 @@ let vid1Layer = new fabric.Canvas('vid1');
 let BG_El = document.getElementById('BG');
 let BallEl = document.getElementById('Ball');
 let Eye_El = document.getElementById('Eye');
-let fps = 18  // frames per sec. max 60
+let fps = 25  // frames per sec. max 60
 
 window.bSpr = {
   left : 300,
@@ -114,7 +114,7 @@ canvas.add(Eye);
 
 
 
-// events treatment - Ball animation
+// Mouse events treatment - Ball animation
 //
   canvas.on('mouse:down', function(e){
   getMouseCoords(e);
@@ -141,8 +141,6 @@ canvas.add(Eye);
       duration: 2000,
       easing: function(t, b, c, d) { return c*t/d + b; }  // linear easiing
     });
-
-    
   });
 
 
@@ -295,9 +293,9 @@ function noteOff(note) {
 // (function() {
   
   fabric.BSprite.fromURL('./assets/SpriteBethGehtL.png', createSpriteL());
-  fabric.BSprite.fromURL('./assets/SpriteBethGehtR.png', createSpriteR());
+  // fabric.BSprite.fromURL('./assets/SpriteBethGehtR.png', createSpriteR());
 
-  function createSpriteL() {
+function createSpriteL() {
     return function(BSpriteL) {
     
       BSpriteL.scale(0.65).set({
@@ -306,24 +304,27 @@ function noteOff(note) {
               });
       BSpriteL.objectCaching = true;
       window.bSpr.Ltrigger = 1;
+      BSpriteL.flip = 0;
       BSpriteL.play();
       
       (function render() { 
-        window.bSpr.left += (window.bSpr.movingLeft ? -2 : 2);
-        if (window.bSpr.left > 1100) {  window.bSpr.movingLeft = 1; }  
-        if (window.bSpr.left < -5)   {  window.bSpr.movingLeft = 0; }  
+        window.bSpr.left += (window.bSpr.movingLeft ? -4 : 4);
+        if (window.bSpr.left > 1200) {  window.bSpr.movingLeft = 1; }  
+        if (window.bSpr.left < -150)   {  window.bSpr.movingLeft = 0; }  
         BSpriteL.left = window.bSpr.left;
         console.log('Ltrigger=', window.bSpr.Ltrigger);
         if (window.bSpr.movingLeft == 1) {
           if (window.bSpr.Ltrigger == 1) {
             window.bSpr.Ltrigger = 0;
+            BSpriteL.flip = 0;
             canvas.add(BSpriteL);
           }
         }
         else { 
           if (window.bSpr.Ltrigger == 0){
           window.bSpr.Ltrigger = 1;
-          canvas.remove(BSpriteL);
+          BSpriteL.flip = 1;
+          // canvas.remove(BSpriteL);
           }
         };
         setTimeout(()=>{fabric.util.requestAnimFrame(render)},1000/fps) ;
@@ -333,46 +334,182 @@ function noteOff(note) {
     };
   }
 
-  function createSpriteR() {
-    return function(BSpriteR) {
+
+
+//  old but working code:
+//
+//
+  // function createSpriteL() {
+  //   return function(BSpriteL) {
     
-      BSpriteR.scale(0.65).set({
-        left:  window.bSpr.left,
-        top:  window.bSpr.top
-              });
-      BSpriteR.objectCaching = true;
-      window.bSpr.Rtrigger = 0;
-      window.bSpr.left = 355;
-      BSpriteR.play();
-
-      ( function render() { 
-        window.bSpr.left += (window.bSpr.movingLeft ? -2 : 2);
-        if (window.bSpr.left > 1300) {  window.bSpr.movingLeft = 1; }  
-        if (window.bSpr.left < -5)   {  window.bSpr.movingLeft = 0; }  
-        BSpriteR.left = window.bSpr.left;
-        if (window.bSpr.movingLeft == 0) {
-          if (window.bSpr.Rtrigger == 0){
-            window.bSpr.Rtrigger = 1;
-            canvas.add(BSpriteR);
-          }
-        }
-        else {
-          if (window.bSpr.Rtrigger == 1){
-            window.bSpr.Rtrigger = 0;
-            canvas.remove(BSpriteR);
-          }
-        };
-        setTimeout(()=>{fabric.util.requestAnimFrame(render)},1000/fps);
+  //     BSpriteL.scale(0.65).set({
+  //       left:  window.bSpr.left,
+  //       top:  window.bSpr.top
+  //             });
+  //     BSpriteL.objectCaching = true;
+  //     window.bSpr.Ltrigger = 1;
+  //     BSpriteL.play();
+      
+  //     (function render() { 
+  //       window.bSpr.left += (window.bSpr.movingLeft ? -2 : 2);
+  //       if (window.bSpr.left > 1100) {  window.bSpr.movingLeft = 1; }  
+  //       if (window.bSpr.left < -5)   {  window.bSpr.movingLeft = 0; }  
+  //       BSpriteL.left = window.bSpr.left;
+  //       console.log('Ltrigger=', window.bSpr.Ltrigger);
+  //       if (window.bSpr.movingLeft == 1) {
+  //         if (window.bSpr.Ltrigger == 1) {
+  //           window.bSpr.Ltrigger = 0;
+  //           canvas.add(BSpriteL);
+  //         }
+  //       }
+  //       else { 
+  //         if (window.bSpr.Ltrigger == 0){
+  //         window.bSpr.Ltrigger = 1;
+  //         canvas.remove(BSpriteL);
+  //         }
+  //       };
+  //       setTimeout(()=>{fabric.util.requestAnimFrame(render)},1000/fps) ;
         
-      } )();
+  //     })();
 
-    };
-  }
+  //   };
+  // }
+
+  // function createSpriteR() {
+  //   return function(BSpriteR) {
+    
+  //     BSpriteR.scale(0.65).set({
+  //       left:  window.bSpr.left,
+  //       top:  window.bSpr.top
+  //             });
+  //     BSpriteR.objectCaching = true;
+  //     window.bSpr.Rtrigger = 0;
+  //     window.bSpr.left = 355;
+  //     BSpriteR.play();
+
+  //     ( function render() { 
+  //       window.bSpr.left += (window.bSpr.movingLeft ? -2 : 2);
+  //       if (window.bSpr.left > 1300) {  window.bSpr.movingLeft = 1; }  
+  //       if (window.bSpr.left < -5)   {  window.bSpr.movingLeft = 0; }  
+  //       BSpriteR.left = window.bSpr.left;
+  //       if (window.bSpr.movingLeft == 0) {
+  //         if (window.bSpr.Rtrigger == 0){
+  //           window.bSpr.Rtrigger = 1;
+  //           canvas.add(BSpriteR);
+  //         }
+  //       }
+  //       else {
+  //         if (window.bSpr.Rtrigger == 1){
+  //           window.bSpr.Rtrigger = 0;
+  //           canvas.remove(BSpriteR);
+  //         }
+  //       };
+  //       setTimeout(()=>{fabric.util.requestAnimFrame(render)},1000/fps);
+        
+  //     } )();
+
+  //   };
+  // }
 
   
 
   
 // })();
+
+
+
+
+// Animating Particles
+//  http://fabricjs.com/particles
+//
+
+(function() {
+  let total = 50,
+    blobs = new Array(total),
+    myfps = fps,
+    mouse_pos = { x: 0, y: 0 },
+    maxx = canvas.width,
+    maxy = 400,    //  canvas.height*2/3,
+    startTime, prevTime, frames;
+
+  fabric.Image.fromURL('../assets/GP_Note.png', blobLoaded);
+
+  canvas.on('mouse:move', function(options) {
+    mouse_pos = canvas.getPointer(options.e);
+  });
+
+  function blobLoaded(img) {
+    for (let i = 0; i < total; i++) {
+      let img2 = new fabric.Image(img.getElement(), {
+        left: Math.random() * maxx,
+        top: Math.random() * maxy,
+        selectable: false
+      });
+      if (i%2) img2.scale(0.2).set('flipX', false)
+      else img2.scale(0.2).set('flipX', true);
+      img2.vx = 0;
+      img2.vy = 0;
+      canvas.add(img2);
+      blobs[i] = img2;
+    }
+
+    frames = 0;
+    startTime = Date.now(), prevTime = startTime;
+    animate();
+  }
+
+  function animate() {
+    for (let i = 0; i < total; i++) {
+      let blob = blobs[i];
+      
+      
+      let dx = blob.left - window.bSpr.left;
+      let dy = blob.top - 380;
+ 
+      // let dx = blob.left - mouse_pos.x;
+      // let dy = blob.top - mouse_pos.y;
+      let vx = blob.vx;
+      let vy = blob.vy;
+
+      if (dx * dx + dy * dy <= 10000) {
+        vx += dx * 0.01;
+        vy += dy * 0.01;
+      }
+      vx *= 0.95;
+      vy *= 0.95;
+
+      vx += Math.random() - 0.5;
+      vy += Math.random() - 0.5;
+
+      let x = blob.left += vx;
+      let y = blob.top += vy;
+
+      if (x < 0 || x > maxx || y < 0 || y > maxy) {
+        let r = Math.atan2(y - maxy / 2, x - maxx / 2);
+        vx = -Math.cos(r);
+        vy = -Math.sin(r);
+      }
+
+      blob.vx = vx;
+      blob.vy = vy;
+    }
+
+    let time = Date.now();
+    frames++;
+
+    if ( time > prevTime + 1000 ) {
+      fps = Math.round( ( frames * 1000 ) / ( time - prevTime ) );
+      prevTime = time;
+      frames = 0;
+
+    }
+
+    fabric.util.requestAnimFrame(animate, canvas.getElement());
+  }
+})();
+
+
+
 
 
 
